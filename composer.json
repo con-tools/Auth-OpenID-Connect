@@ -1,9 +1,11 @@
 {
     "name": "con-troll/Auth-OpenID-Connect",
     "description": "Simple OpenID Connect library",
+    "license": "Apache-2.0"
     "authors": [
         {
             "name": "Michael Jett",
+            "email": "mjett@mitre.org",
             "homepage": "https://github.com/jumbojett"
         },
         { 
