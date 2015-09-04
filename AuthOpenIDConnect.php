@@ -252,10 +252,11 @@ class OpenIDConnectClient
     }
 
     /**
-     * Start Here
-     * @return void
+     * Request an authentication/authorization URL from the provider
+     * Creates a nonce as an anti-forgery method
+     * @return String URL to send the user to for authentication
      */
-    private function requestAuthorization() {
+    public function getAuthenticationURL() {
         $auth_endpoint = $this->getProviderConfigValue("authorization_endpoint");
         $response_type = "code";
 
@@ -282,11 +283,16 @@ class OpenIDConnectClient
             $auth_params = array_merge($auth_params, array('scope' => implode(' ', $this->scopes)));
         }
 
-        $auth_endpoint .= '?' . http_build_query($auth_params, null, '&');
-
-        $this->redirect($auth_endpoint);
+        return $auth_endpoint . '?' . http_build_query($auth_params, null, '&');
+	}
+	
+	/**
+	 * Start authentication by redirecting the calling user agent to the authentication endpoint
+	 * Does not return
+	 */
+	private function requestAuthorization() {
+        $this->redirect($this->getAuthenticationURL()); // redirect does not return
     }
-
 
     /**
      * Requests ID and Access tokens
