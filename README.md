@@ -1,13 +1,11 @@
-PHP OpenID Connect Basic Client
-========================
-A simple library that allows an application to authenticate a user through the basic OpenID Connect flow.
-This library hopes to encourage OpenID Connect use by making it simple enough for a developer with little knowledge of
-the OpenID Connect protocol to setup authentication. 
-
-A special thanks goes to Justin Richer and Amanda Anganes for their help and support of the protocol.
+PHP OpenID Connect Client
+=========================
+A relatively simple library that allows an application to authenticate a user through the basic OpenID Connect flow.
+This is a fork of the OpenID-ConnectP-PHP library by Michael Jett, but extends it to allow finer manipulation of the
+protocol to allow the HTTP rediret to be handled differently then throwing a 302 Redirect from within the library.
 
 # Requirements #
- 1. PHP 5.2 or greater 
+ 1. PHP 5.6 or greater 
  2. CURL extension
  3. JSON extension
 
@@ -18,39 +16,10 @@ $oidc = new OpenIDConnectClient('https://id.provider.com/',
                                 'ClientIDHere',
                                 'ClientSecretHere');
 
-$oidc->authenticate();
+$url = $oidc->getAuthorizationURL();
+// send the client to complete the login
+// ...
+// capture the authentication token from the callback into $code
+$oidc->complete($code);
 $name = $oidc->requestUserInfo('given_name');
-                                 
 ```
-
-[See openid spec for available user attributes][1]
-
-## Example 2: Dynamic Registration ##
-
-```php
-$oidc = new OpenIDConnectClient("https://id.provider.com/");
-
-$oidc->register();
-$client_id = $oidc->getClientID();
-$client_secret = $oidc->getClientSecret();
-
-// Be sure to add logic to store the client id and client secret
-```
-
-## Example 3: Network and Security ##
-```php
-// Configure a proxy
-$oidc->setHttpProxy("http://my.proxy.com:80/");
-
-// Configure a cert
-$oidc->setCertPath("/path/to/my.cert");
-```
-  
-### Todo ###
-- Dynamic registration does not support registration auth tokens and endpoints
-
-  [1]: http://openid.net/specs/openid-connect-basic-1_0-15.html#id_res
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jumbojett/openid-connect-php/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
