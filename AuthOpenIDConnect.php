@@ -1,11 +1,10 @@
 <?php
-
 /**
- *
  * Copyright MITRE 2015
  *
- * OpenIDConnectClient for PHP5
+ * AuthOpenIDConnect for PHP5
  * Author: Michael Jett <mjett@mitre.org>
+ * Author: Oded Arbel <oded@geek.co.il>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may obtain
@@ -18,15 +17,7 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations
  * under the License.
- *
  */
-
-/**
- * Use session to manage a nonce
- */
-if (!isset($_SESSION)) {
-    session_start();
-}
 
 /**
  *
@@ -36,7 +27,6 @@ if (!isset($_SESSION)) {
  * phpseclib is required to validate the signatures of some tokens.
  * It can be downloaded from: http://phpseclib.sourceforge.net/
  */
-
 if (!class_exists('Crypt_RSA')) {
     user_error('Unable to find phpseclib Crypt/RSA.php.  Ensure phpseclib is installed and in include_path');
 }
@@ -64,7 +54,6 @@ function b64url2b64($base64url) {
     }
     return strtr($base64url, '-_', '+/');
 }
-
 
 /**
  * OpenIDConnect Exception Class
