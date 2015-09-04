@@ -27,6 +27,6 @@
         "ext-curl": "*"
     },
     "autoload": {
-        "classmap": ["AuthOpenIDConnect.php"]
+        "classmap": ["init.php"]
     }
 }
