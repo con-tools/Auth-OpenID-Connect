@@ -173,7 +173,7 @@ class OpenIDConnectClient {
 		if (isset($token_json->refresh_token))
 			$this->refreshToken = $token_json->refresh_token;
 			
-			// Success!
+		// Success!
 		return true;
 	}
 
