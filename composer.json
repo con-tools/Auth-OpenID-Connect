@@ -27,6 +27,6 @@
         "ext-curl": "*"
     },
     "autoload": {
-        "classmap": ["init.php"]
+        "files": ["init.php"]
     }
 }
