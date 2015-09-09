@@ -66,5 +66,4 @@ if (!function_exists('json_decode')) {
 }
 
 require_once('./classes/OpenIDConnectClientException.php');
-require_once('./AuthOpenIDConnect.php')
-
+require_once('./classes/AuthOpenIDConnect.php');
