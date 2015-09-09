@@ -393,10 +393,10 @@ class OpenIDConnectClient {
 		 * regular base64 and use the XML key format for simplicity.
 		 */
 		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
-		$rsa = new \phpseclib\Crypt\RSA();
+		$rsa = new Crypt_RSA();
 		$rsa->setHash($hashtype);
-		$rsa->loadKey($public_key_xml, \phpseclib\Crypt\RSA::PUBLIC_FORMAT_XML);
-		$rsa->signatureMode = \phpseclib\Crypt\RSA::SIGNATURE_PKCS1;
+		$rsa->loadKey($public_key_xml, CRYPT_RSA_PUBLIC_FORMAT_XML);
+		$rsa->signatureMode = CRYPT_RSA_SIGNATURE_PKCS1;
 		return $rsa->verify($payload, $signature);
 	}
 
