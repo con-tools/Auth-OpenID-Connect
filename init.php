@@ -66,4 +66,4 @@ if (!function_exists('json_decode')) {
 }
 
 require_once(__DIR__ . '/classes/OpenIDConnectClientException.php');
-require_once(__DIR__ . '/classes/AuthOpenIDConnect.php');
+require_once(__DIR__ . '/classes/OpenIDConnectClient.php');
