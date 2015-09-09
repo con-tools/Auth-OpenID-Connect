@@ -190,7 +190,10 @@ class OpenIDConnectClient
         // This is also known as auto "discovery"
         if (!isset($this->providerConfig[$param])) {
             $well_known_config_url = rtrim($this->getProviderURL(),"/") . "/.well-known/openid-configuration";
-            $value = json_decode($this->fetchURL($well_known_config_url))->{$param};
+            error_log("Fetching provider config url '$well_known_config_url'",4);
+            $config_data = $this->fetchURL($well_known_config_url);
+            error_log("Got provider config: '$config_data'",4);
+            $value = json_decode($config_data)->{$param};
 
             if ($value) {
                 $this->providerConfig[$param] = $value;
