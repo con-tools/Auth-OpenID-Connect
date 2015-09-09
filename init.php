@@ -65,5 +65,5 @@ if (!function_exists('json_decode')) {
     throw new OpenIDConnectClientException('OpenIDConnect needs the JSON PHP extension.');
 }
 
-require_once('./classes/OpenIDConnectClientException.php');
-require_once('./classes/AuthOpenIDConnect.php');
+require_once(__DIR__ . '/classes/OpenIDConnectClientException.php');
+require_once(__DIR__ . '/classes/AuthOpenIDConnect.php');
