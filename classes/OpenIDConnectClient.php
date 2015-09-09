@@ -155,12 +155,8 @@ class OpenIDConnectClient {
 		$claims = $this->decodeJWT($token_json->id_token, 1);
 		
 		// Verify the signature
-		if (! $this->canVerifySignatures()) {
-			if (! $this->verifyJWTsignature($token_json->id_token)) {
-				throw new OpenIDConnectClientException("Unable to verify signature");
-			}
-		} else {
-			user_error("Warning: JWT signature verification unavailable.");
+		if (! $this->verifyJWTsignature($token_json->id_token)) {
+			throw new OpenIDConnectClientException("Unable to verify signature");
 		}
 		
 		// If this is a valid claim
@@ -389,9 +385,6 @@ class OpenIDConnectClient {
 	 * @return bool
 	 */
 	private function verifyRSAJWTsignature($hashtype, $key, $payload, $signature) {
-		if (! class_exists('Crypt_RSA')) {
-			throw new OpenIDConnectClientException('Crypt_RSA support unavailable.');
-		}
 		if (! (property_exists($key, 'n') and property_exists($key, 'e'))) {
 			throw new OpenIDConnectClientException('Malformed key object');
 		}
@@ -400,10 +393,10 @@ class OpenIDConnectClient {
 		 * regular base64 and use the XML key format for simplicity.
 		 */
 		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
-		$rsa = new Crypt_RSA();
+		$rsa = new \phpseclib\Crypt\RSA();
 		$rsa->setHash($hashtype);
-		$rsa->loadKey($public_key_xml, CRYPT_RSA_PUBLIC_FORMAT_XML);
-		$rsa->signatureMode = CRYPT_RSA_SIGNATURE_PKCS1;
+		$rsa->loadKey($public_key_xml, \phpseclib\Crypt\RSA::PUBLIC_FORMAT_XML);
+		$rsa->signatureMode = \phpseclib\Crypt\RSA::SIGNATURE_PKCS1;
 		return $rsa->verify($payload, $signature);
 	}
 
@@ -724,14 +717,6 @@ class OpenIDConnectClient {
 	 */
 	public function getClientSecret() {
 		return $this->clientSecret;
-	}
-
-	/**
-	 *
-	 * @return bool
-	 */
-	public function canVerifySignatures() {
-		return class_exists('Crypt_RSA');
 	}
 
 	/**
