@@ -45,7 +45,7 @@ class OpenIDConnectClient {
 	 *
 	 * @var array holds the provider configuration
 	 */
-	private $providerConfig = array ();
+	private $providerConfig = array();
 
 	/**
 	 *
@@ -75,19 +75,19 @@ class OpenIDConnectClient {
 	 *
 	 * @var array holds scopes
 	 */
-	private $scopes = array ();
+	private $scopes = array();
 
 	/**
 	 *
 	 * @var array holds a cache of info returned from the user info endpoint
 	 */
-	private $userInfo = array ();
+	private $userInfo = array();
 
 	/**
 	 *
 	 * @var array holds authentication parameters
 	 */
-	private $authParams = array ();
+	private $authParams = array();
 
 	/**
 	 *
@@ -112,7 +112,7 @@ class OpenIDConnectClient {
 	 *        	$provider_url
 	 */
 	public function setProviderURL($provider_url) {
-		$this->providerConfig ['issuer'] = $provider_url;
+		$this->providerConfig['issuer'] = $provider_url;
 	}
 
 	/**
@@ -122,17 +122,20 @@ class OpenIDConnectClient {
 	 */
 	public function authenticate() {
 		// Do a preemptive check to see if the provider has thrown an error from a previous redirect
-		if (isset($_REQUEST ['error'])) {
-			throw new OpenIDConnectClientException("Error: " . $_REQUEST ['error'] . " Description: " . $_REQUEST ['error_description']);
+		if (isset($_REQUEST['error'])) {
+			throw new OpenIDConnectClientException("Error: " . $_REQUEST['error'] . " Description: " . $_REQUEST['error_description']);
 		}
 		
 		// If we have an authorization code then proceed to request a token
-		if (! isset($_REQUEST ["code"])) {
+		if (! isset($_REQUEST["code"])) {
 			$this->requestAuthorization();
 			// requestAuthorization() exists
 		}
 		
-		$code = $_REQUEST ["code"];
+		return $this->completeAuthorization($_REQUEST["code"], $_REQUEST['state']);
+	}
+
+	public function completeAuthorization($code, $state) {
 		$token_json = $this->requestTokens($code);
 		
 		// Throw an error if the server returns one
@@ -141,7 +144,7 @@ class OpenIDConnectClient {
 		}
 		
 		// Do an OpenID Connect session check
-		if ($_REQUEST ['state'] != $_SESSION ['openid_connect_state']) {
+		if ($state != $_SESSION['openid_connect_state']) {
 			throw new OpenIDConnectClientException("Unable to determine state");
 		}
 		
@@ -165,7 +168,7 @@ class OpenIDConnectClient {
 			throw new OpenIDConnectClientException("Unable to verify JWT claims");
 			
 			// Clean up the session a little
-		unset($_SESSION ['openid_connect_nonce']);
+		unset($_SESSION['openid_connect_nonce']);
 		
 		// Save the access token
 		$this->accessToken = $token_json->access_token;
@@ -184,7 +187,7 @@ class OpenIDConnectClient {
 	 *        	example: openid, given_name, etc...
 	 */
 	public function addScope($scope) {
-		$this->scopes = array_merge($this->scopes, ( array ) $scope);
+		$this->scopes = array_merge($this->scopes, (array) $scope);
 	}
 
 	/**
@@ -193,7 +196,7 @@ class OpenIDConnectClient {
 	 *        	example: prompt=login
 	 */
 	public function addAuthParam($param) {
-		$this->authParams = array_merge($this->authParams, ( array ) $param);
+		$this->authParams = array_merge($this->authParams, (array) $param);
 	}
 
 	/**
@@ -208,7 +211,7 @@ class OpenIDConnectClient {
 	private function getProviderConfigValue($param) {
 		// If the configuration value is not available, attempt to fetch it from a well known config endpoint
 		// This is also known as auto "discovery"
-		if (! isset($this->providerConfig [$param])) {
+		if (! isset($this->providerConfig[$param])) {
 			$well_known_config_url = rtrim($this->getProviderURL(), "/") . "/.well-known/openid-configuration";
 			$config_data = $this->fetchURL($well_known_config_url);
 			$json_data = json_decode($config_data);
@@ -217,13 +220,13 @@ class OpenIDConnectClient {
 			$value = json_decode($config_data)->{$param};
 			
 			if ($value) {
-				$this->providerConfig [$param] = $value;
+				$this->providerConfig[$param] = $value;
 			} else {
 				throw new OpenIDConnectClientException("The provider {$param} has not been set. Make sure your provider has a well known configuration available.");
 			}
 		}
 		
-		return $this->providerConfig [$param];
+		return $this->providerConfig[$param];
 	}
 
 	/**
@@ -254,15 +257,15 @@ class OpenIDConnectClient {
 		 * Thank you
 		 * http://stackoverflow.com/questions/189113/how-do-i-get-current-page-full-url-in-php-on-a-windows-iis-server
 		 */
-		$base_page_url = (@$_SERVER ["HTTPS"] == "on") ? "https://" : "http://";
-		if ($_SERVER ["SERVER_PORT"] != "80" && $_SERVER ["SERVER_PORT"] != "443") {
-			$base_page_url .= $_SERVER ["SERVER_NAME"] . ":" . $_SERVER ["SERVER_PORT"];
+		$base_page_url = (@$_SERVER["HTTPS"] == "on") ? "https://" : "http://";
+		if ($_SERVER["SERVER_PORT"] != "80" && $_SERVER["SERVER_PORT"] != "443") {
+			$base_page_url .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"];
 		} else {
-			$base_page_url .= $_SERVER ["SERVER_NAME"];
+			$base_page_url .= $_SERVER["SERVER_NAME"];
 		}
 		
-		$tmp = explode("?", $_SERVER ['REQUEST_URI']);
-		$base_page_url .= $tmp [0];
+		$tmp = explode("?", $_SERVER['REQUEST_URI']);
+		$base_page_url .= $tmp[0];
 		
 		return $base_page_url;
 	}
@@ -279,7 +282,7 @@ class OpenIDConnectClient {
 	/**
 	 * Request an authentication/authorization URL from the provider
 	 * Creates a nonce as an anti-forgery method
-	 * 
+	 *
 	 * @return String URL to send the user to for authentication
 	 */
 	public function getAuthenticationURL() {
@@ -289,13 +292,13 @@ class OpenIDConnectClient {
 		// Generate and store a nonce in the session
 		// The nonce is an arbitrary value
 		$nonce = $this->generateRandString();
-		$_SESSION ['openid_connect_nonce'] = $nonce;
+		$_SESSION['openid_connect_nonce'] = $nonce;
 		
 		// State essentially acts as a session key for OIDC
 		$state = $this->generateRandString();
-		$_SESSION ['openid_connect_state'] = $state;
+		$_SESSION['openid_connect_state'] = $state;
 		
-		$auth_params = array_merge($this->authParams, array (
+		$auth_params = array_merge($this->authParams, array(
 				'response_type' => $response_type,
 				'redirect_uri' => $this->getRedirectURL(),
 				'client_id' => $this->clientID,
@@ -306,7 +309,7 @@ class OpenIDConnectClient {
 		
 		// If the client has been registered with additional scopes
 		if (sizeof($this->scopes) > 0) {
-			$auth_params = array_merge($auth_params, array (
+			$auth_params = array_merge($auth_params, array(
 					'scope' => implode(' ', $this->scopes) 
 			));
 		}
@@ -332,7 +335,7 @@ class OpenIDConnectClient {
 	private function requestTokens($code) {
 		$token_endpoint = $this->getProviderConfigValue("token_endpoint");
 		$grant_type = "authorization_code";
-		$token_params = array (
+		$token_params = array(
 				'grant_type' => $grant_type,
 				'code' => $code,
 				'redirect_uri' => $this->getRedirectURL(),
@@ -414,7 +417,7 @@ class OpenIDConnectClient {
 	private function verifyJWTsignature($jwt) {
 		$parts = explode(".", $jwt);
 		$signature = base64url_decode(array_pop($parts));
-		$header = json_decode(base64url_decode($parts [0]));
+		$header = json_decode(base64url_decode($parts[0]));
 		$payload = implode(".", $parts);
 		$jwks = json_decode($this->fetchURL($this->getProviderConfigValue('jwks_uri')));
 		if ($jwks === NULL) {
@@ -445,7 +448,7 @@ class OpenIDConnectClient {
 	 * @return bool
 	 */
 	private function verifyJWTclaims($claims) {
-		return (($claims->iss == $this->getProviderURL()) && (($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud))) && ($claims->nonce == $_SESSION ['openid_connect_nonce']));
+		return (($claims->iss == $this->getProviderURL()) && (($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud))) && ($claims->nonce == $_SESSION['openid_connect_nonce']));
 	}
 
 	/**
@@ -458,7 +461,7 @@ class OpenIDConnectClient {
 	 */
 	private function decodeJWT($jwt, $section = 0) {
 		$parts = explode(".", $jwt);
-		return json_decode(base64url_decode($parts [$section]));
+		return json_decode(base64url_decode($parts[$section]));
 	}
 
 	/**
@@ -535,7 +538,7 @@ class OpenIDConnectClient {
 				$content_type = 'application/json';
 			}
 			
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array (
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 					"Content-Type: {$content_type}",
 					'Content-Length: ' . strlen($post_body) 
 			));
@@ -588,10 +591,10 @@ class OpenIDConnectClient {
 	 * @throws OpenIDConnectClientException
 	 */
 	public function getProviderURL() {
-		if (! isset($this->providerConfig ['issuer'])) {
+		if (! isset($this->providerConfig['issuer'])) {
 			throw new OpenIDConnectClientException("The provider URL has not been set");
 		} else {
-			return $this->providerConfig ['issuer'];
+			return $this->providerConfig['issuer'];
 		}
 	}
 
@@ -660,8 +663,8 @@ class OpenIDConnectClient {
 	public function register() {
 		$registration_endpoint = $this->getProviderConfigValue('registration_endpoint');
 		
-		$send_object = ( object ) array (
-				'redirect_uris' => array (
+		$send_object = (object) array(
+				'redirect_uris' => array(
 						$this->getRedirectURL() 
 				),
 				'client_name' => $this->getClientName() 
