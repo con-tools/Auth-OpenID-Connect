@@ -1,5 +1,5 @@
 {
-	"name" : "con-troll/Auth-OpenID-Connect",
+	"name" : "con-troll/auth-openid-connect",
 	"description" : "Simple OpenID Connect library",
 	"license" : "Apache-2.0",
 	"authors" : [{
@@ -23,8 +23,10 @@
 		"ext-json" : "*",
 		"ext-curl" : "*"
 	},
-	"archive": {
-		"exclude": [".*"]
+	"archive" : {
+		"exclude" : [
+			".*"
+		]
 	},
 	"autoload" : {
 		"files" : [

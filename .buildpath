@@ -2,7 +2,6 @@
 <buildpath>
 	<buildpathentry excluding="Crypt/" kind="src" path="vendor/phpseclib/phpseclib/phpseclib"/>
 	<buildpathentry kind="src" path="vendor/composer"/>
-	<buildpathentry kind="src" path="classes"/>
 	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
 	<buildpathentry kind="src" path="vendor/phpseclib/phpseclib/phpseclib/Crypt"/>
 </buildpath>
