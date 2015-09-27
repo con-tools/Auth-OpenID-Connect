@@ -34,4 +34,9 @@ interface OpenIDSessionStorageIF {
 	 * @return string Negotiated auth session state
 	 */
 	public function getState();
+	
+	/**
+	 * Clear the stored nonce and state from the session storage
+	 */
+	public function clear();
 }

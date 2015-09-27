@@ -34,4 +34,15 @@ class OpenIDSessionStorageDefault implements OpenIDSessionStorageIF {
 		return @$_SESSION['openid_connect_state'];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see OpenIDSessionStorageIF::clear()
+	 */
+	public function clear() {
+		try {
+			unset($_SESSION['openid_connect_nonce']);
+			unset($_SESSION['openid_connect_state']);
+		} catch (Exception $e) {}
+	}
+
 }
