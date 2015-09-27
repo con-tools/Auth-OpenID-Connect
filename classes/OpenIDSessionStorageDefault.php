@@ -15,7 +15,7 @@ class OpenIDSessionStorageDefault implements OpenIDSessionStorageIF {
 	 * @see OpenIDSessionStorageIF::getNonce()
 	 */
 	public function getNonce() {
-		return $_SESSION['openid_connect_nonce'];
+		return @$_SESSION['openid_connect_nonce'];
 	}
 
 	/**
@@ -31,7 +31,7 @@ class OpenIDSessionStorageDefault implements OpenIDSessionStorageIF {
 	 * @see OpenIDSessionStorageIF::getState()
 	 */
 	public function getState() {
-		return $_SESSION['openid_connect_state'];
+		return @$_SESSION['openid_connect_state'];
 	}
 
 }
