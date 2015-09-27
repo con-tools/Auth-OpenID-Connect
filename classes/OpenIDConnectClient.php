@@ -20,7 +20,7 @@
  */
 
 /**
- * Please note this class stores nonces in $_SESSION['openid_connect_nonce']
+ * Please note this class stores nonces in $_SESSION['openid_connect_nonce'], unless using a non-default session storage driver
  */
 class OpenIDConnectClient {
 
@@ -88,22 +88,21 @@ class OpenIDConnectClient {
 	 * @var array holds authentication parameters
 	 */
 	private $authParams = array();
+	
+	private $session = null;
 
 	/**
 	 *
-	 * @param $provider_url string
-	 *        	optional
-	 *        	
-	 * @param $client_id string
-	 *        	optional
-	 * @param $client_secret string
-	 *        	optional
-	 *        	
+	 * @param string $provider_url optional
+	 * @param string $client_id optional
+	 * @param string $client_secret optional
+	 * @param OpenIDSessionStorageIF $session_provider optional
 	 */
-	public function __construct($provider_url = null, $client_id = null, $client_secret = null) {
+	public function __construct($provider_url = null, $client_id = null, $client_secret = null, OpenIDSessionStorageIF $session_provider) {
 		$this->setProviderURL($provider_url);
 		$this->clientID = $client_id;
 		$this->clientSecret = $client_secret;
+		$this->session = $session_provider ?: new OpenIDSessionStorageDefault();
 	}
 
 	/**
@@ -144,7 +143,7 @@ class OpenIDConnectClient {
 		}
 		
 		// Do an OpenID Connect session check
-		if ($state != $_SESSION['openid_connect_state']) {
+		if ($state !=  $this->session->getState()) {
 			throw new OpenIDConnectClientException("Unable to determine state");
 		}
 		
@@ -163,8 +162,8 @@ class OpenIDConnectClient {
 		if (! $this->verifyJWTclaims($claims))
 			throw new OpenIDConnectClientException("Unable to verify JWT claims");
 			
-			// Clean up the session a little
-		unset($_SESSION['openid_connect_nonce']);
+		// Clean up the session a little
+		$this->session->clear();
 		
 		// Save the access token
 		$this->accessToken = $token_json->access_token;
@@ -288,11 +287,11 @@ class OpenIDConnectClient {
 		// Generate and store a nonce in the session
 		// The nonce is an arbitrary value
 		$nonce = $this->generateRandString();
-		$_SESSION['openid_connect_nonce'] = $nonce;
+		$this->session->storeNonce($nonce);
 		
 		// State essentially acts as a session key for OIDC
 		$state = $this->generateRandString();
-		$_SESSION['openid_connect_state'] = $state;
+		$this->session->storeState($state);
 		
 		$auth_params = array_merge($this->authParams, array(
 				'response_type' => $response_type,
@@ -444,7 +443,7 @@ class OpenIDConnectClient {
 		return (
 				($claims->iss == $this->getProviderURL()) && 
 				(($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud))) && 
-				($claims->nonce == $_SESSION['openid_connect_nonce']));
+				($claims->nonce == $this->session->getNonce()));
 	}
 
 	/**
