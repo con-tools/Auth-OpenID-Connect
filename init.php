@@ -67,3 +67,5 @@ if (!function_exists('json_decode')) {
 
 require_once(__DIR__ . '/classes/OpenIDConnectClientException.php');
 require_once(__DIR__ . '/classes/OpenIDConnectClient.php');
+require_once(__DIR__ . '/classes/OpenIDSessionStorageDefault.php');
+require_once(__DIR__ . '/classes/OpenIDSessionStorageIF.php');
