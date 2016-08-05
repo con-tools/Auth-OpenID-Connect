@@ -396,7 +396,7 @@ class OpenIDConnectClient {
 		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
 		$rsa = new RSA();
 		$rsa->setHash($hashtype);
-		$rsa->load($public_key_xml, 'xml');
+		$rsa->loadKey($public_key_xml, 'xml');
 		return $rsa->verify($payload, $signature, RSA::PADDING_PKCS1);
 	}
 
