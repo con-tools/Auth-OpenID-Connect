@@ -397,7 +397,8 @@ class OpenIDConnectClient {
 		$rsa = new RSA();
 		$rsa->setHash($hashtype);
 		$rsa->loadKey($public_key_xml, 'xml');
-		return $rsa->verify($payload, $signature, RSA::PADDING_PKCS1);
+		$rsa->signatureMode = RSA::SIGNATURE_PKCS1;;
+		return $rsa->verify($payload, $signature);
 	}
 
 	/**
