@@ -393,6 +393,7 @@ class OpenIDConnectClient {
 		 * We already have base64url-encoded data, so re-encode it as
 		 * regular base64 and use the XML key format for simplicity.
 		 */
+		var_dump($hashtype, $key, $payload, $signature);
 		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
 		$rsa = new RSA();
 		$rsa->setHash($hashtype);
