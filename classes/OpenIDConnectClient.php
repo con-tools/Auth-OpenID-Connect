@@ -19,6 +19,8 @@
  * under the License.
  */
 
+use phpseclib\Crypt\RSA;
+
 /**
  * Please note this class stores nonces in $_SESSION['openid_connect_nonce'], unless using a non-default session storage driver
  */
@@ -391,11 +393,12 @@ class OpenIDConnectClient {
 		 * We already have base64url-encoded data, so re-encode it as
 		 * regular base64 and use the XML key format for simplicity.
 		 */
+		var_dump($hashtype, $key, $payload, base64_encode($signature));
 		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
-		$rsa = new Crypt_RSA();
+		$rsa = new RSA();
 		$rsa->setHash($hashtype);
-		$rsa->loadKey($public_key_xml, CRYPT_RSA_PUBLIC_FORMAT_XML);
-		$rsa->signatureMode = CRYPT_RSA_SIGNATURE_PKCS1;
+		$rsa->loadKey($public_key_xml, 'xml');
+		$rsa->signatureMode = RSA::SIGNATURE_PKCS1;;
 		return $rsa->verify($payload, $signature);
 	}
 
