@@ -211,16 +211,18 @@ class OpenIDConnectClient {
 		if (! isset($this->providerConfig[$param])) {
 			$well_known_config_url = rtrim($this->getProviderURL(), "/") . "/.well-known/openid-configuration";
 			$config_data = $this->fetchURL($well_known_config_url);
-			$json_data = json_decode($config_data);
+			$json_data = json_decode($config_data, true);
 			if (is_null($json_data))
 				throw new Exception("Error getting provider configuration from '$well_known_config_url': $config_data");
-			$value = json_decode($config_data)->{$param};
+			$value = $json_data[$param];
 			
 			if ($value) {
 				$this->providerConfig[$param] = $value;
 			} else {
 				throw new OpenIDConnectClientException("The provider {$param} has not been set. Make sure your provider has a well known configuration available.");
 			}
+			// after we verified we have what we need, cache all additional data so we don't need multiple round trips
+			$this->providerConfig = array_merge($json_data, $this->providerConfig);
 		}
 		
 		return $this->providerConfig[$param];
@@ -393,12 +395,14 @@ class OpenIDConnectClient {
 		 * We already have base64url-encoded data, so re-encode it as
 		 * regular base64 and use the XML key format for simplicity.
 		 */
-		var_dump($hashtype, $key, $payload, base64_encode($signature));
-		$public_key_xml = "<RSAKeyValue>\r\n" . "  <Modulus>" . b64url2b64($key->n) . "</Modulus>\r\n" . "  <Exponent>" . b64url2b64($key->e) . "</Exponent>\r\n" . "</RSAKeyValue>";
+		$public_key_xml = "<RSAKeyValue>" .
+			"<Modulus>" . b64url2b64($key->n) . "</Modulus>" .
+			"<Exponent>" . b64url2b64($key->e) . "</Exponent>".
+			"</RSAKeyValue>";
 		$rsa = new RSA();
 		$rsa->setHash($hashtype);
-		$rsa->loadKey($public_key_xml, 'xml');
-		$rsa->signatureMode = RSA::SIGNATURE_PKCS1;;
+		$rsa->loadKey($public_key_xml, RSA::PUBLIC_FORMAT_XML);
+		$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
 		return $rsa->verify($payload, $signature);
 	}
 
