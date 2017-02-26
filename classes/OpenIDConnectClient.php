@@ -150,7 +150,7 @@ class OpenIDConnectClient {
 		}
 		
 		if (! property_exists($token_json, 'id_token')) {
-			throw new OpenIDConnectClientException("User did not authorize openid scope.");
+			throw new OpenIDConnectClientCancelledException("User did not authorize openid scope.");
 		}
 		
 		$claims = $this->decodeJWT($token_json->id_token, 1);
@@ -301,13 +301,13 @@ class OpenIDConnectClient {
 				'client_id' => $this->clientID,
 				'nonce' => $nonce,
 				'state' => $state,
-				'scope' => 'openid' 
+				'scope' => 'openid'
 		));
 		
 		// If the client has been registered with additional scopes
 		if (sizeof($this->scopes) > 0) {
 			$auth_params = array_merge($auth_params, array(
-					'scope' => implode(' ', $this->scopes) 
+					'scope' => implode(' ', $this->scopes)
 			));
 		}
 		
@@ -337,7 +337,7 @@ class OpenIDConnectClient {
 				'code' => $code,
 				'redirect_uri' => $this->getRedirectURL(),
 				'client_id' => $this->clientID,
-				'client_secret' => $this->clientSecret 
+				'client_secret' => $this->clientSecret
 		);
 		
 		// Convert token params to string format
@@ -348,8 +348,8 @@ class OpenIDConnectClient {
 
 	/**
 	 *
-	 * @param array $keys        	
-	 * @param array $header        	
+	 * @param array $keys
+	 * @param array $header
 	 * @throws OpenIDConnectClientException
 	 * @return object
 	 */
@@ -364,8 +364,8 @@ class OpenIDConnectClient {
 
 	/**
 	 *
-	 * @param array $keys        	
-	 * @param string $alg        	
+	 * @param array $keys
+	 * @param string $alg
 	 * @throws OpenIDConnectClientException
 	 * @return object
 	 */
@@ -380,8 +380,8 @@ class OpenIDConnectClient {
 
 	/**
 	 *
-	 * @param string $hashtype        	
-	 * @param object $key        	
+	 * @param string $hashtype
+	 * @param object $key
 	 * @throws OpenIDConnectClientException
 	 * @return bool
 	 */
@@ -439,13 +439,13 @@ class OpenIDConnectClient {
 
 	/**
 	 *
-	 * @param object $claims        	
+	 * @param object $claims
 	 * @return bool
 	 */
 	private function verifyJWTclaims($claims) {
 		return (
-				($claims->iss == $this->getProviderURL()) && 
-				(($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud))) && 
+				($claims->iss == $this->getProviderURL()) &&
+				(($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud))) &&
 				($claims->nonce == $this->session->getNonce()));
 	}
 
@@ -484,7 +484,7 @@ class OpenIDConnectClient {
 	 *        	phone_number string The End-User's preferred telephone number. E.164 [E.164] is RECOMMENDED as the format of this Claim. For example, +1 (425) 555-1212 or +56 (2) 687 2400.
 	 *        	address JSON object The End-User's preferred address. The value of the address member is a JSON [RFC4627] structure containing some or all of the members defined in Section 2.4.2.1.
 	 *        	updated_time string Time the End-User's information was last updated, represented as a RFC 3339 [RFC3339] datetime. For example, 2011-01-03T23:58:42+0000.
-	 *        	
+	 *
 	 * @return mixed
 	 *
 	 */
@@ -538,7 +538,7 @@ class OpenIDConnectClient {
 			
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 					"Content-Type: {$content_type}",
-					'Content-Length: ' . strlen($post_body) 
+					'Content-Length: ' . strlen($post_body)
 			));
 		}
 		
@@ -663,9 +663,9 @@ class OpenIDConnectClient {
 		
 		$send_object = (object) array(
 				'redirect_uris' => array(
-						$this->getRedirectURL() 
+						$this->getRedirectURL()
 				),
-				'client_name' => $this->getClientName() 
+				'client_name' => $this->getClientName()
 		);
 		
 		$response = $this->fetchURL($registration_endpoint, json_encode($send_object));
