@@ -100,7 +100,7 @@ class OpenIDConnectClient {
 	 * @param string $client_secret optional
 	 * @param OpenIDSessionStorageIF $session_provider optional
 	 */
-	public function __construct($provider_url = null, $client_id = null, $client_secret = null, OpenIDSessionStorageIF $session_provider) {
+	public function __construct($provider_url = null, $client_id = null, $client_secret = null, OpenIDSessionStorageIF $session_provider = null) {
 		$this->setProviderURL($provider_url);
 		$this->clientID = $client_id;
 		$this->clientSecret = $client_secret;
