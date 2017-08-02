@@ -740,6 +740,14 @@ class OpenIDConnectClient {
 	 *
 	 * @return string
 	 */
+	public function setAccessToken($token) {
+		return $this->accessToken = $token;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
 	public function getRefreshToken() {
 		return $this->refreshToken;
 	}
