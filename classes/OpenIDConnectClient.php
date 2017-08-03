@@ -100,7 +100,7 @@ class OpenIDConnectClient {
 	 * @param string $client_secret optional
 	 * @param OpenIDSessionStorageIF $session_provider optional
 	 */
-	public function __construct($provider_url = null, $client_id = null, $client_secret = null, OpenIDSessionStorageIF $session_provider) {
+	public function __construct($provider_url = null, $client_id = null, $client_secret = null, OpenIDSessionStorageIF $session_provider = null) {
 		$this->setProviderURL($provider_url);
 		$this->clientID = $client_id;
 		$this->clientSecret = $client_secret;
@@ -492,10 +492,14 @@ class OpenIDConnectClient {
 	 * @return mixed
 	 *
 	 */
-	public function requestUserInfo($attribute) {
+	public function requestUserInfo($attribute = NULL) {
 		// Check to see if the attribute is already in memory
 		if (array_key_exists($attribute, $this->userInfo)) {
 			return $this->userInfo->$attribute;
+		}
+		
+		if (is_null($attribute) && !empty($this->userInfo)) { // support "get all"
+			return array_merge([], $this->userInfo);
 		}
 		
 		$user_info_endpoint = $this->getProviderConfigValue("userinfo_endpoint");
@@ -509,6 +513,10 @@ class OpenIDConnectClient {
 		
 		if (array_key_exists($attribute, $this->userInfo)) {
 			return $this->userInfo->$attribute;
+		}
+		
+		if (is_null($attribute)) {
+			return array_merge([], $this->userInfo);
 		}
 		
 		return null;
@@ -734,6 +742,14 @@ class OpenIDConnectClient {
 	 */
 	public function getAccessToken() {
 		return $this->accessToken;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function setAccessToken($token) {
+		return $this->accessToken = $token;
 	}
 
 	/**
