@@ -516,7 +516,7 @@ class OpenIDConnectClient {
 		}
 		
 		if (is_null($attribute)) {
-			return array_merge([], $this->userInfo);
+			return array_merge([], (array)$this->userInfo);
 		}
 		
 		return null;
